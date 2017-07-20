@@ -15,6 +15,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.Insets;
 
 public class UserDialog {
 
@@ -23,7 +24,7 @@ public class UserDialog {
 	private Mediator mediator;
 	private DefaultListModel<String> model;
 	private String id;
-	JButton btnBroadcast;
+	private JButton btnBroadcast;
 	
 	/**
 	 * Create the application.
@@ -36,9 +37,9 @@ public class UserDialog {
 		
 		initialize();
 		
-		mediator.setUserStatus(id, true);
+//		mediator.setUserStatus(id, true);
 		mediator.setDialog(id, this);
-		mediator.updateMsgs(id);
+//		mediator.updateMsgs(id);
 		
 		frame.setVisible(true);
 	}
@@ -67,6 +68,7 @@ public class UserDialog {
 		frame.getContentPane().add(list);
 		
 		txtMsg = new JTextField();
+		txtMsg.setEnabled(false);
 		txtMsg.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -89,19 +91,48 @@ public class UserDialog {
 			}
 		});
 		txtMsg.setText("Enter message here");
-		txtMsg.setBounds(10, 164, 237, 20);
+		txtMsg.setBounds(80, 164, 196, 20);
 		frame.getContentPane().add(txtMsg);
 		txtMsg.setColumns(10);
 		
 		btnBroadcast = new JButton("Broadcast");
+		btnBroadcast.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnBroadcast.setEnabled(false);
+		btnBroadcast.setMargin(new Insets(2, 2, 2, 2));
 		btnBroadcast.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				broadcastMsg(txtMsg.getText());
+				broadcastMsg("User " + id + ": " + txtMsg.getText());
 				txtMsg.setText("");
 			}
 		});
-		btnBroadcast.setBounds(257, 163, 89, 23);
+		btnBroadcast.setBounds(286, 163, 60, 23);
 		frame.getContentPane().add(btnBroadcast);
+		
+		JButton btnOnlineToggle = new JButton("Go Online");
+		btnOnlineToggle.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toggleOnline();
+			}
+
+			private void toggleOnline() {
+				if ( mediator.getUserStatus(id) ){
+					mediator.setUserStatus(id, false);
+					txtMsg.setEnabled(false);
+					btnBroadcast.setEnabled(false);
+					btnOnlineToggle.setText("Go Online");
+				} else {
+					mediator.setUserStatus(id, true);
+					txtMsg.setEnabled(true);
+					btnBroadcast.setEnabled(true);
+					mediator.updateMsgs(id);
+					btnOnlineToggle.setText("Go Offline");
+				}
+			}
+		});
+		btnOnlineToggle.setMargin(new Insets(2, 2, 2, 2));
+		btnOnlineToggle.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btnOnlineToggle.setBounds(10, 164, 60, 23);
+		frame.getContentPane().add(btnOnlineToggle);
 	}
 	
 	private void broadcastMsg( String msg ){

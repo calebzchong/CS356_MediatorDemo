@@ -166,7 +166,7 @@ public class GUI {
 	}
 
 	private void setLabelOffline(JLabel jLabel) {
-		jLabel.setText("Online");
+		jLabel.setText("Offline");
 		jLabel.setForeground(new Color(220, 20, 60));	
 	}
 
